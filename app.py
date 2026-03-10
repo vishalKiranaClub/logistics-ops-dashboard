@@ -263,7 +263,11 @@ st.markdown("""
 <hr style="margin:12px 0 20px 0;">
 """, unsafe_allow_html=True)
 
-tab1, tab2 = st.tabs(["📋  Daily Data Entry", "📊  Operations Dashboard"])
+tab1, tab2, tab3 = st.tabs([
+    "📋 Daily Data Entry",
+    "📊 Operations Dashboard",
+    "🗂 Previous Entries"
+])
 
 # ══════════════════════════════════════════════════════════════════════════════
 # TAB 1 — DATA ENTRY
@@ -612,3 +616,72 @@ with tab2:
         file_name=f"logistics_ops_{date_from}_to_{date_to}.csv",
         mime="text/csv",
     )
+# ══════════════════════════════════════════════════════════════════════════════
+# TAB 3 — PREVIOUS ENTRIES
+# ══════════════════════════════════════════════════════════════════════════════
+
+with tab3:
+
+    st.markdown('<div class="section-title">📂 View / Edit Previous Entries</div>', unsafe_allow_html=True)
+
+    df = load_data()
+
+    if df.empty:
+        st.info("No entries available.")
+        st.stop()
+
+    # Filters
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        start_date = st.date_input("Start Date", value=df["date"].min().date())
+
+    with col2:
+        end_date = st.date_input("End Date", value=df["date"].max().date())
+
+    with col3:
+        seller_filter = st.selectbox("Seller", ["All"] + SELLERS)
+
+    # Apply filters
+    filtered = df[(df["date"].dt.date >= start_date) & (df["date"].dt.date <= end_date)]
+
+    if seller_filter != "All":
+        filtered = filtered[filtered["seller"] == seller_filter]
+
+    if filtered.empty:
+        st.warning("No entries match the selected filters.")
+        st.stop()
+
+    filtered_display = filtered.copy()
+    filtered_display["date"] = filtered_display["date"].dt.strftime("%Y-%m-%d")
+
+    st.dataframe(filtered_display, use_container_width=True)
+
+    # Select entry
+    st.markdown("### Select Entry to Edit / Delete")
+
+    selected_index = st.selectbox(
+        "Choose entry",
+        filtered.index,
+        format_func=lambda x: f"{df.loc[x,'date'].date()} | {df.loc[x,'seller']}"
+    )
+
+    selected_row = df.loc[selected_index]
+
+    st.write("#### Selected Entry")
+    st.dataframe(pd.DataFrame([selected_row]))
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("🗑 Delete Entry"):
+
+            df = df.drop(selected_index)
+            df.to_csv(CSV_PATH, index=False)
+
+            st.success("Entry deleted successfully.")
+            st.rerun()
+
+    with col2:
+        if st.button("✏️ Edit Entry"):
+            st.warning("Delete this entry and resubmit a corrected one from the Daily Entry tab.")
