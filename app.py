@@ -204,6 +204,7 @@ UNDISPATCHED_REASONS = [
     "Courier pickup did not happen",
     "Pickup happened but shipments were handed over partially",
     "Shipments were not ready at the seller",
+    "Courier Scanning issue",
 ]
 PARTIAL_REASONS = ["Vehicle space constraints", "Seller handed over shipments partially"]
 PACKING_DELAY_REASONS = [
