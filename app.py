@@ -203,6 +203,7 @@ SR_COURIERS = ["Ekart_SR", "Delhivery_SR", "Xpressbees_SR", "DTDC_SR"]
 UNDISPATCHED_REASONS = [
     "Courier pickup did not happen",
     "Pickup happened but shipments were handed over partially",
+    "Shipments were not ready at the seller",
 ]
 PARTIAL_REASONS = ["Vehicle space constraints", "Seller handed over shipments partially"]
 PACKING_DELAY_REASONS = [
