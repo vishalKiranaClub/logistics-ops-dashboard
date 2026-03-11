@@ -277,33 +277,59 @@ with tab1:
     st.markdown('<div class="section-title">📝 Submit Daily Operational Metrics</div>', unsafe_allow_html=True)
 
     with st.form("entry_form", clear_on_submit=True):
+
         col1, col2 = st.columns(2)
+
         with col1:
             entry_date = st.date_input("Date", value=date.today())
+
         with col2:
             seller = st.selectbox("Seller", SELLERS)
 
         st.markdown('<div class="section-title">📦 Order Flow</div>', unsafe_allow_html=True)
-     
-    c1, c2, c3 = st.columns(3)
-with c1:
-    orders_pending_packing     = st.number_input("Orders Pending for Packing", min_value=0, value=0)
-    orders_packed              = st.number_input("Orders Packed",               min_value=0, value=0)
-with c2:
-    orders_ready_dispatch      = st.number_input("Orders Ready for Dispatch",   min_value=0, value=0)
-    orders_picked_up           = st.number_input("Orders Picked Up",            min_value=0, value=0)
-with c3:
-    orders_not_packed_on_time      = st.number_input("Orders Not Packed On Time",      min_value=0, value=0)
-    orders_not_dispatched_on_time  = st.number_input("Orders Not Dispatched On Time",  min_value=0, value=0)
 
-        backlog_previous_day = st.number_input("Backlog from Previous Day", min_value=0, value=0,
-                                               help="Carry-forward orders from yesterday")
+        c1, c2, c3 = st.columns(3)
+
+        with c1:
+            orders_pending_packing = st.number_input(
+                "Orders Pending for Packing", min_value=0, value=0
+            )
+
+            orders_ready_dispatch = st.number_input(
+                "Orders Ready for Dispatch", min_value=0, value=0
+            )
+
+        with c2:
+            orders_packed = st.number_input(
+                "Orders Packed", min_value=0, value=0
+            )
+
+            orders_picked_up = st.number_input(
+                "Orders Picked Up", min_value=0, value=0
+            )
+
+        with c3:
+            orders_not_packed_on_time = st.number_input(
+                "Orders Not Packed On Time", min_value=0, value=0
+            )
+
+        backlog_previous_day = st.number_input(
+            "Backlog from Previous Day",
+            min_value=0,
+            value=0,
+            help="Carry-forward orders from yesterday"
+        )
 
         st.markdown('<div class="section-title">🚛 Undispatched Reason</div>', unsafe_allow_html=True)
-        undispatched_reason = st.selectbox("Why were orders not dispatched?",
-                                           ["— Select —"] + UNDISPATCHED_REASONS)
 
-        courier = sub_courier = partial_handover_reason = ""
+        undispatched_reason = st.selectbox(
+            "Why were orders not dispatched?",
+            ["— Select —"] + UNDISPATCHED_REASONS
+        )
+
+        courier = ""
+        sub_courier = ""
+        partial_handover_reason = ""
 
         if undispatched_reason == "Courier pickup did not happen":
             courier = st.selectbox("Courier", COURIERS)
