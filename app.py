@@ -355,23 +355,22 @@ with tab1:
 
     if submitted:
         row = {
-            "date": str(entry_date),
-            "seller": seller,
-            "orders_pending_packing": orders_pending_packing,
-            "orders_packed": orders_packed,
-            "orders_ready_dispatch": orders_ready_dispatch,
-            "orders_picked_up": orders_picked_up,
-            "orders_not_packed_on_time": orders_not_packed_on_time,
-            "orders_not_dispatched_on_time": orders_not_dispatched_on_time,
-            "undispatched_reason": undispatched_reason if undispatched_reason != "— Select —" else "",
-            "courier": courier,
-            "sub_courier": sub_courier,
-            "partial_handover_reason": partial_handover_reason,
-            "packing_delay_reason": packing_delay_reason,
-            "fault_type": fault_type,
-            "orders_impacted": orders_impacted,
-            "backlog_previous_day": backlog_previous_day,
-        }
+    "date": str(entry_date),
+    "seller": seller,
+    "orders_pending_packing": orders_pending_packing,
+    "orders_packed": orders_packed,
+    "orders_ready_dispatch": orders_ready_dispatch,
+    "orders_picked_up": orders_picked_up,
+    "orders_not_packed_on_time": orders_not_packed_on_time,
+    "undispatched_reason": undispatched_reason if undispatched_reason != "— Select —" else "",
+    "courier": courier,
+    "sub_courier": sub_courier,
+    "partial_handover_reason": partial_handover_reason,
+    "packing_delay_reason": packing_delay_reason,
+    "fault_type": fault_type,
+    "orders_impacted": orders_impacted,
+    "backlog_previous_day": backlog_previous_day,
+}
         save_row(row)
         st.success(f"✅ Entry saved for **{seller}** on **{entry_date}**")
 
