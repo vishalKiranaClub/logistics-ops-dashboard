@@ -186,6 +186,7 @@ UNDISPATCHED_REASONS = [
     "Courier pickup did not happen",
     "Pickup happened but shipments were handed over partially",
     "Shipments were not ready",
+    "Courier scanning issue",
 ]
 PARTIAL_REASONS = ["Vehicle space constraints", "Seller handed over shipments partially"]
 PACKING_DELAY_REASONS = [
@@ -290,12 +291,14 @@ def render_order_flow_fields(defaults=None, key_prefix="new"):
             "Partial Handover Reason", PARTIAL_REASONS, index=ph_idx, key=f"{key_prefix}_partial")
 
     st.markdown('<div class="section-title">⏱ Packing Delay</div>', unsafe_allow_html=True)
-    packing_delay_reason = ""
-    if orders_pending_packing > 0:
-        cur_pd = d.get("packing_delay_reason", PACKING_DELAY_REASONS[0])
-        pd_idx = PACKING_DELAY_REASONS.index(cur_pd) if cur_pd in PACKING_DELAY_REASONS else 0
-        packing_delay_reason = st.selectbox(
-            "Packing Delay Reason", PACKING_DELAY_REASONS, index=pd_idx, key=f"{key_prefix}_packdelay")
+    packing_delay_opts = ["— Not Applicable —"] + PACKING_DELAY_REASONS
+    cur_pd = d.get("packing_delay_reason", "")
+    pd_idx = packing_delay_opts.index(cur_pd) if cur_pd in packing_delay_opts else 0
+    packing_delay_raw = st.selectbox(
+        "Packing Delay Reason", packing_delay_opts, index=pd_idx,
+        key=f"{key_prefix}_packdelay",
+        help="Select a reason if orders were pending for packing")
+    packing_delay_reason = "" if packing_delay_raw == "— Not Applicable —" else packing_delay_raw
 
     st.markdown('<div class="section-title">⚖️ Fault & Impact</div>', unsafe_allow_html=True)
     fc1, fc2 = st.columns(2)
@@ -595,6 +598,13 @@ with tab3:
             alerts.append(("warning",
                 f"📦 <b>Shipments Not Ready (Today):</b> "
                 f"<b>{len(not_ready_today)}</b> seller(s) had shipments not ready for dispatch."))
+
+        scanning_today = today_df[today_df["undispatched_reason"] == "Courier scanning issue"]
+        if not scanning_today.empty:
+            scan_impact = int(scanning_today["orders_impacted"].sum())
+            alerts.append(("warning",
+                f"🔍 <b>Courier Scanning Issue (Today):</b> "
+                f"<b>{len(scanning_today)}</b> instance(s) — <b>{scan_impact}</b> orders impacted."))
 
     for _, row in fdf[fdf["orders_impacted"] > 100].iterrows():
         alerts.append(("critical",
